@@ -1,28 +1,27 @@
 # CyberTools CTF Workbench
 
-CyberTools is a local-only CTF and authorized-lab workbench. It combines the existing crypto transformer with an offline helper chat, auto-decode candidates, JWT inspection, timestamp/URL/regex/CIDR utilities, and safe Kali command references.
+A local-only, offline-first cybersecurity workbench for CTFs, labs, cryptography practice, and explicitly authorized testing.
 
-## Current modules
+## Included
 
-- **Workbench:** Base64, hex, URL, Morse, Brainfuck, XOR, ROT13, Atbash, Caesar, hashes, AES/DES/3DES, and auto-decode candidates.
-- **Crypto:** local JWT structure inspection and hash comparison.
-- **Kali reference:** parameterized reference generators for nmap, curl, strings, OpenSSL, and grep. Commands are displayed only and are never executed.
-- **Utilities:** timestamp conversion, URL parsing, IPv4/CIDR calculations, and regex testing.
-- **Assistant:** offline rule-based explanations with no API key or external service.
+- **Crypto and encoding:** Base64, URL, hex, Morse, ROT13/ROT47, Caesar, Atbash, Vigenere, XOR, hashes, HMAC, AES/DES/3DES.
+- **CTF workbench:** explicit transformations, JWT structure decoder, regex tester, transparent outputs.
+- **Utilities:** IPv4/CIDR calculator, URL parser, UUID/token/password generation, HTTP request explainer, hash comparison.
+- **Kali reference:** parameterized references for nmap, ffuf, gobuster, curl, strings, readelf, objdump, OpenSSL, grep, tshark, John, and Hashcat. Commands are shown only.
+- **Assistant:** offline rule-based explanations without an API key or external service.
 
-## Run
+## Run on Kali
 
 ```bash
 cd ~/ctf-crypto-toolkit
+git pull
 source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
 
-Open <http://127.0.0.1:5000>.
+Open `http://127.0.0.1:5000`.
 
-## Design and safety
+## Scope and safety
 
-Sensitive transformations run locally in the browser when practical; the existing Flask API is localhost-only. This project does not upload files, make outbound requests, execute shell commands, provide persistence/C2 behavior, or scan targets. Use generated commands only within an authorized CTF, lab, or test scope.
-
-The command generator is intentionally a reference tool rather than an attack automation framework. More modules can be added incrementally, with client-side processing preferred for encodings, hashes, JWT structure, regex, and network calculations.
+This project intentionally does not upload files, make outbound requests, execute shell commands, scan targets, automate credential attacks, provide persistence, or provide C2 behavior. Use displayed commands only inside an authorized CTF, lab, or test scope. Sensitive transformations should remain in the browser whenever practical.
