@@ -1,38 +1,28 @@
 # CTF Crypto Toolkit
 
-A local-only Flask web application for common CTF transformations. It is intentionally a cryptography and encoding utility, not a remote shell, agent, downloader, or command-and-control framework.
+A local-only Flask web application for CTF encoding, decoding, cryptography, and a small offline helper chat. The chat gives explanations and safe Linux/Kali command references; it does not execute commands, run arbitrary code, or contact external AI services.
 
 ## Features
 
-- Base64, hex, URL, Morse, and Brainfuck decoding
-- Repeating-key XOR
-- MD5, SHA-1, SHA-2, and SHA-3 hashing
+- Base64, hex, URL, Morse, and Brainfuck transformations
+- Repeating-key XOR and hash calculation
 - AES, DES, and 3DES CBC/ECB operations
 - PKCS#7, zero, and no-padding modes
-- Base64, hex, and UTF-8 input/output formats
-- Kali Linux command reference
+- Offline helper chat for decoding guidance and Kali references
+- Read-only/reference commands for files, text, encoding, crypto, archives, and analysis
+- Localhost-only operation with a 2 MiB request limit
 
 ## Run on Kali Linux
 
 ```bash
-git clone https://github.com/moashraf2006/ctf-crypto-toolkit.git
-cd ctf-crypto-toolkit
-python3 -m venv .venv
+git pull
 source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
 
-Open <http://127.0.0.1:5000> in a browser. The server binds to localhost and has no feature that executes submitted commands or contacts a target server.
+Open <http://127.0.0.1:5000>. If the browser was already open, refresh the page after `git pull`. The chat is rule-based and works without an API key or Internet connection.
 
-## AES format note
+## Safety boundary
 
-For the PowerShell sample supplied with this project, use AES, CBC, 256-bit key, zero padding, Base64 input, and an IV extracted from the first 16 decoded bytes. The sample prepends the IV to the ciphertext; this web tool deliberately leaves IV extraction explicit so challenge data is not silently misinterpreted.
-
-## Security boundaries
-
-- Runs locally by default.
-- No shell execution, arbitrary code evaluation, uploads, persistence, or outbound HTTP requests.
-- Request bodies are limited to 2 MiB.
-- Brainfuck execution has a one-million-step limit.
-- Do not use this tool against systems or data without authorization.
+The toolkit intentionally does not execute shell commands, accept uploads, make outbound requests, provide C2 behavior, or run arbitrary code. Use the displayed commands manually and only in authorized CTF/lab environments.

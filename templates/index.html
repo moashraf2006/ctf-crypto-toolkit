@@ -1,26 +1,15 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CTF Crypto Toolkit</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<header><h1>CTF Crypto Toolkit</h1><p>Local-only encoders, decoders, hashes, classical ciphers, and AES/DES helpers.</p></header>
-<main>
-<section class="panel"><label for="tool">Tool</label><select id="tool">
-<option value="base64-encode">Base64 encode</option><option value="base64-decode">Base64 decode</option>
-<option value="hex-encode">Hex encode</option><option value="hex-decode">Hex decode</option>
-<option value="url-encode">URL encode</option><option value="url-decode">URL decode</option>
-<option value="morse-decode">Morse decode</option><option value="brainfuck">Brainfuck decode</option>
-<option value="xor">Repeating-key XOR</option><option value="hash">Hash</option><option value="cipher">AES / DES / 3DES</option>
-</select><div id="options"></div>
-<label for="input">Input</label><textarea id="input" placeholder="Paste challenge data here"></textarea>
-<button id="run">Transform</button><label for="output">Output</label><textarea id="output" readonly></textarea><p id="status"></p></section>
-<section class="panel help"><h2>Kali command reference</h2><pre>echo -n 'text' | base64
-printf 'text' | xxd -p
-printf 'hex' | xxd -r -p
-echo -n 'text' | sha256sum
-printf 'text' | md5sum
-openssl enc -aes-256-cbc -K KEY_HEX -iv IV_HEX -in input -out output</pre><p>This application never executes shell commands, accepts uploads, or makes outbound requests.</p></section>
-</main><script src="{{ url_for('static', filename='app.js') }}"></script>
-</body></html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CTF Crypto Toolkit</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><header><h1>CTF Crypto Toolkit</h1><p>Local CTF helper for encoding, decoding, crypto analysis, and safe Kali references.</p></header>
+<main><section class="panel"><h2>Transform</h2><label for="tool">Tool</label><select id="tool"><option value="base64-encode">Base64 encode</option><option value="base64-decode">Base64 decode</option><option value="hex-encode">Hex encode</option><option value="hex-decode">Hex decode</option><option value="url-encode">URL encode</option><option value="url-decode">URL decode</option><option value="morse-decode">Morse decode</option><option value="brainfuck">Brainfuck decode</option><option value="xor">Repeating-key XOR</option><option value="hash">Hash</option><option value="cipher">AES / DES / 3DES</option></select><div id="options"></div><label for="input">Input</label><textarea id="input" placeholder="Paste challenge data here"></textarea><button id="run">Transform</button><label for="output">Output</label><textarea id="output" readonly></textarea><p id="status"></p></section>
+<section class="panel"><h2>CTF helper chat</h2><div id="chat" class="chat"><div class="msg bot">Ask me about decoding, crypto settings, or safe Kali commands.</div></div><div class="chat-row"><input id="message" placeholder="e.g. show Kali commands for Base64"><button id="ask">Ask</button></div><p class="note">Offline rule-based helper. It does not execute commands or contact external AI services.</p></section>
+<section class="panel help"><h2>Kali command reference</h2><pre>printf '%s' 'text' | base64
+printf '%s' 'BASE64' | base64 -d
+printf '%s' 'text' | xxd -p
+printf '%s' 'HEX' | xxd -r -p
+printf '%s' 'text' | sha256sum
+strings -n 6 file
+file file
+xxd -g 1 -l 64 file
+openssl rand -hex 16
+curl -s http://127.0.0.1:5000/api/health</pre><p>No shell commands are executed by this application.</p></section></main><script src="{{ url_for('static', filename='app.js') }}"></script></body></html>
