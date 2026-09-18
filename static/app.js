@@ -1,196 +1,33 @@
 const $ = id => document.getElementById(id);
 const tool = $('tool');
+const val = (id, fallback='') => $(id)?.value ?? fallback;
 
-function val(id, fallback) {
-  const el = $(id);
-  return el ? el.value : fallback;
-}
+// Navigation
+for (const tab of document.querySelectorAll('.tab')) tab.addEventListener('click', () => { document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.section').forEach(x => x.classList.remove('active-section')); tab.classList.add('active'); $(tab.dataset.section).classList.add('active-section'); });
 
 function renderOptions() {
   const t = tool.value;
-
-  if (t === 'xor') {
-    $('options').innerHTML = `
-      <input id="key" placeholder="XOR key">
-      <select id="key_encoding">
-        <option value="utf8">Key UTF-8</option>
-        <option value="hex">Key hex</option>
-        <option value="base64">Key Base64</option>
-      </select>
-      <select id="input_encoding">
-        <option value="utf8">Input UTF-8</option>
-        <option value="hex">Input hex</option>
-        <option value="base64">Input Base64</option>
-      </select>
-      <select id="output_encoding">
-        <option value="utf8">Output UTF-8</option>
-        <option value="hex">Output hex</option>
-        <option value="base64">Output Base64</option>
-      </select>
-    `;
-  } else if (t === 'hash') {
-    $('options').innerHTML = `
-      <select id="algorithm">
-        <option>sha256</option>
-        <option>md5</option>
-        <option>sha1</option>
-        <option>sha512</option>
-        <option>sha3_256</option>
-      </select>
-    `;
-  } else if (t === 'cipher') {
-    $('options').innerHTML = `
-      <select id="algorithm">
-        <option>AES</option>
-        <option>DES</option>
-        <option>3DES</option>
-      </select>
-      <select id="operation">
-        <option value="encrypt">Encrypt</option>
-        <option value="decrypt">Decrypt</option>
-      </select>
-      <select id="mode">
-        <option>CBC</option>
-        <option>ECB</option>
-      </select>
-      <input id="key" placeholder="Key">
-      <input id="iv" placeholder="IV (required for CBC)">
-      <select id="input_encoding">
-        <option value="base64">Input/key/IV Base64</option>
-        <option value="hex">Input/key/IV hex</option>
-        <option value="utf8">Input/key/IV UTF-8</option>
-      </select>
-      <select id="output_encoding">
-        <option value="base64">Output Base64</option>
-        <option value="hex">Output hex</option>
-        <option value="utf8">Output UTF-8</option>
-      </select>
-      <select id="padding">
-        <option value="pkcs7">PKCS#7</option>
-        <option value="zeros">Zero padding</option>
-        <option value="none">None</option>
-      </select>
-    `;
-  } else if (t === 'caesar') {
-    $('options').innerHTML = `
-      <input id="shift" value="3" placeholder="Shift">
-    `;
-  } else {
-    $('options').innerHTML = '';
-  }
+  if (t === 'xor') $('options').innerHTML = '<input id="key" placeholder="XOR key"><select id="key_encoding"><option value="utf8">Key UTF-8</option><option value="hex">Key hex</option><option value="base64">Key Base64</option></select><select id="input_encoding"><option value="utf8">Input UTF-8</option><option value="hex">Input hex</option><option value="base64">Input Base64</option></select><select id="output_encoding"><option value="utf8">Output UTF-8</option><option value="hex">Output hex</option><option value="base64">Output Base64</option></select>';
+  else if (t === 'hash') $('options').innerHTML = '<select id="algorithm"><option>sha256</option><option>md5</option><option>sha1</option><option>sha512</option><option>sha3_256</option></select>';
+  else if (t === 'cipher') $('options').innerHTML = '<select id="algorithm"><option>AES</option><option>DES</option><option>3DES</option></select><select id="operation"><option value="encrypt">Encrypt</option><option value="decrypt">Decrypt</option></select><select id="mode"><option>CBC</option><option>ECB</option></select><input id="key" placeholder="Key"><input id="iv" placeholder="IV (required for CBC)"><select id="input_encoding"><option value="base64">Input/key/IV Base64</option><option value="hex">Input/key/IV hex</option><option value="utf8">Input/key/IV UTF-8</option></select><select id="output_encoding"><option value="base64">Output Base64</option><option value="hex">Output hex</option><option value="utf8">Output UTF-8</option></select><select id="padding"><option value="pkcs7">PKCS#7</option><option value="zeros">Zero padding</option><option value="none">None</option></select>';
+  else if (t === 'caesar') $('options').innerHTML = '<input id="shift" value="3" placeholder="Shift">'; else $('options').innerHTML = '';
 }
+tool.addEventListener('change', renderOptions); renderOptions();
 
-tool.addEventListener('change', renderOptions);
-renderOptions();
+$('run').addEventListener('click', async () => { $('status').textContent='Working…'; const body={tool:tool.value,input:val('input'),key:val('key'),iv:val('iv'),algorithm:val('algorithm','sha256'),operation:val('operation','encrypt'),mode:val('mode','CBC'),padding:val('padding','pkcs7'),key_encoding:val('key_encoding','utf8'),input_encoding:val('input_encoding','utf8'),output_encoding:val('output_encoding','utf8'),shift:val('shift','3')}; try { const r=await fetch('/api/transform',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const j=await r.json(); if(!r.ok) throw Error(j.error||'Request failed'); $('output').value=j.result; $('status').textContent='Done'; } catch(e) { $('status').textContent=e.message; } });
 
-async function runTransform() {
-  $('status').textContent = 'Working...';
-  $('output').value = '';
+$('autodecode-btn').addEventListener('click', async () => { const input=val('autodecode-input').trim(); if(!input) return; const box=$('autodecode-results'); box.textContent='Analyzing…'; try { const r=await fetch('/api/autodecode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({input})}); const j=await r.json(); if(!r.ok) throw Error(j.error); box.innerHTML=(j.results||[]).map(x=>`<div class="result-item"><strong>${escapeHtml(x.type)}</strong><pre>${escapeHtml(x.result)}</pre></div>`).join('')||'<div class="result-item">No likely interpretation found.</div>'; } catch(e) { box.textContent=e.message; } });
 
-  const body = {
-    tool: tool.value,
-    input: $('input').value,
-    key: val('key', ''),
-    iv: val('iv', ''),
-    algorithm: val('algorithm', 'sha256'),
-    operation: val('operation', 'encrypt'),
-    mode: val('mode', 'CBC'),
-    padding: val('padding', 'pkcs7'),
-    key_encoding: val('key_encoding', 'utf8'),
-    input_encoding: val('input_encoding', 'utf8'),
-    output_encoding: val('output_encoding', 'utf8'),
-    shift: val('shift', '3')
-  };
+function escapeHtml(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function pretty(value) { return JSON.stringify(value, null, 2); }
+$('jwt-btn').addEventListener('click', () => { try { const parts=val('jwt-input').trim().split('.'); if(parts.length !== 3) throw Error('A JWT must contain three segments.'); const decode=x=>JSON.parse(decodeURIComponent(atob(x.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-x.length%4)%4)).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''))); $('jwt-output').textContent=pretty({header:decode(parts[0]),payload:decode(parts[1]),signature:'[not verified; signature bytes hidden]'}); } catch(e) { $('jwt-output').textContent='Error: '+e.message; } });
+$('hash-compare').addEventListener('click', () => { $('hash-result').textContent=val('hash-a').trim().toLowerCase()===val('hash-b').trim().toLowerCase()?'Match':'Different'; });
+$('timestamp-btn').addEventListener('click', () => { const x=val('timestamp-input').trim(); const date=/^\d+(\.\d+)?$/.test(x)?new Date(Number(x)*1000):new Date(x); $('timestamp-output').textContent=isNaN(date)?'Invalid timestamp':pretty({iso:date.toISOString(),unix_seconds:Math.floor(date.getTime()/1000),local:date.toString()}); });
+$('url-btn').addEventListener('click', () => { try { const u=new URL(val('url-input')); $('url-output').textContent=pretty({protocol:u.protocol,host:u.host,hostname:u.hostname,port:u.port||'(default)',path:u.pathname,query:[...u.searchParams]}); } catch(e) { $('url-output').textContent='Invalid URL'; } });
+$('regex-btn').addEventListener('click', () => { try { const re=new RegExp(val('regex-input'),'g'); $('regex-output').textContent=pretty([...val('regex-text').matchAll(re)].map(x=>({match:x[0],index:x.index}))); } catch(e) { $('regex-output').textContent='Regex error: '+e.message; } });
+$('cidr-btn').addEventListener('click', () => { try { const [ip,prefixText]=val('cidr-input').split('/'); const prefix=Number(prefixText); const oct=ip.split('.').map(Number); if(oct.length!==4||prefix<0||prefix>32||oct.some(x=>x<0||x>255)) throw Error(); const n=(((oct[0]<<24)>>>0)+((oct[1]<<16)>>>0)+((oct[2]<<8)>>>0)+oct[3])>>>0; const mask=prefix===0?0:(0xffffffff<<(32-prefix))>>>0; const network=(n&mask)>>>0; const broadcast=(network|(~mask>>>0))>>>0; const fmt=x=>[(x>>>24)&255,(x>>>16)&255,(x>>>8)&255,x&255].join('.'); $('cidr-output').textContent=pretty({network:fmt(network),broadcast:fmt(broadcast),prefix,mask:fmt(mask),usable_hosts:prefix>=31?Math.pow(2,32-prefix):Math.max(0,Math.pow(2,32-prefix)-2)}); } catch(e) { $('cidr-output').textContent='Invalid IPv4 CIDR'; } });
 
-  try {
-    const r = await fetch('/api/transform', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const j = await r.json();
+const COMMANDS={nmap:{description:'Network discovery and service enumeration for authorized lab targets.',fields:[['target','Target or lab host','TARGET'],['ports','Port expression','-p-'],['service','Service detection','-sV'],['scripts','Default scripts','-sC']],build:v=>`nmap ${v.ports} ${v.service} ${v.scripts} ${v.target}`},curl:{description:'Make an HTTP request and inspect a response.',fields:[['url','URL','http://127.0.0.1:5000'],['headers','Include headers','-i']],build:v=>`curl ${v.headers} ${v.url}`},strings:{description:'Extract printable strings from a local artifact.',fields:[['file','Local file','sample.bin'],['length','Minimum length','6']],build:v=>`strings -n ${v.length} ${v.file}`},openssl:{description:'Perform a local OpenSSL encryption/decryption operation.',fields:[['file','Input file','input.bin'],['out','Output file','output.bin'],['key','Key hex','KEY_HEX'],['iv','IV hex','IV_HEX']],build:v=>`openssl enc -aes-256-cbc -K ${v.key} -iv ${v.iv} -in ${v.file} -out ${v.out}`},grep:{description:'Search text in local files.',fields:[['pattern','Pattern','flag'],['path','Path','.']],build:v=>`grep -Rni -- ${v.pattern} ${v.path}`}};
+const commandSelect=$('command-tool'); Object.keys(COMMANDS).forEach(k=>commandSelect.add(new Option(k, k))); function renderCommand(){const c=COMMANDS[commandSelect.value]; $('command-description').textContent=c.description; $('command-form').innerHTML=c.fields.map(f=>`<label>${f[1]}<input data-command-field="${f[0]}" value="${f[2]}"></label>`).join(''); document.querySelectorAll('[data-command-field]').forEach(x=>x.addEventListener('input',updateCommand)); updateCommand();} function updateCommand(){const c=COMMANDS[commandSelect.value]; const v={}; document.querySelectorAll('[data-command-field]').forEach(x=>v[x.dataset.commandField]=x.value); $('generated-command').textContent=c.build(v);} commandSelect.addEventListener('change',renderCommand); renderCommand(); $('copy-command').addEventListener('click',()=>navigator.clipboard?.writeText($('generated-command').textContent));
 
-    if (!r.ok) {
-      throw new Error(j.error || 'Request failed');
-    }
-
-    $('output').value = j.result;
-    $('status').textContent = 'Done';
-  } catch (e) {
-    $('status').textContent = e.message;
-  }
-}
-
-$('run').addEventListener('click', runTransform);
-
-function addChatMessage(text, who) {
-  const el = document.createElement('div');
-  el.className = 'msg ' + who;
-  el.textContent = text;
-  $('chat').appendChild(el);
-  $('chat').scrollTop = $('chat').scrollHeight;
-}
-
-async function askAssistant() {
-  const message = $('message').value.trim();
-  if (!message) return;
-
-  addChatMessage(message, 'user');
-  $('message').value = '';
-
-  try {
-    const r = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
-    });
-
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.error || 'Request failed');
-
-    addChatMessage(j.reply, 'bot');
-  } catch (e) {
-    addChatMessage('Error: ' + e.message, 'bot');
-  }
-}
-
-$('ask').addEventListener('click', askAssistant);
-$('message').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') askAssistant();
-});
-
-async function autoDecode() {
-  const value = $('autodecode-input').value.trim();
-  if (!value) {
-    $('autodecode-results').innerHTML = '<div class="result-item">Enter ciphertext first.</div>';
-    return;
-  }
-
-  try {
-    const r = await fetch('/api/autodecode', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: value })
-    });
-
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.error || 'Request failed');
-
-    const list = j.results || [];
-    if (!list.length) {
-      $('autodecode-results').innerHTML = '<div class="result-item">No likely interpretation found.</div>';
-      return;
-    }
-
-    $('autodecode-results').innerHTML = list.map(item => `
-      <div class="result-item">
-        <strong>${item.type}</strong>
-        <pre>${item.result}</pre>
-      </div>
-    `).join('');
-  } catch (e) {
-    $('autodecode-results').innerHTML = '<div class="result-item">' + e.message + '</div>';
-  }
-}
-
-$('autodecode-btn').addEventListener('click', autoDecode);
+function addMsg(text,who){const el=document.createElement('div');el.className='msg '+who;el.textContent=text;$('chat').appendChild(el);$('chat').scrollTop=$('chat').scrollHeight;} async function ask(){const message=val('message').trim();if(!message)return;addMsg(message,'user');$('message').value='';try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});const j=await r.json();if(!r.ok)throw Error(j.error);addMsg(j.reply,'bot');}catch(e){addMsg('Error: '+e.message,'bot');}} $('ask').addEventListener('click',ask); $('message').addEventListener('keydown',e=>{if(e.key==='Enter')ask();});

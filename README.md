@@ -1,31 +1,28 @@
-# CTF Crypto Toolkit
+# CyberTools CTF Workbench
 
-A local-only Flask web application for CTF encoding, decoding, cryptography, and a small offline helper chat. The chat gives explanations and safe Linux/Kali command references; it does not execute commands, run arbitrary code, or contact external AI services.
+CyberTools is a local-only CTF and authorized-lab workbench. It combines the existing crypto transformer with an offline helper chat, auto-decode candidates, JWT inspection, timestamp/URL/regex/CIDR utilities, and safe Kali command references.
 
-## Features
+## Current modules
 
-- Base64, hex, URL, Morse, Brainfuck, ROT13, Atbash, and Caesar transformations
-- Repeating-key XOR and hash calculation
-- AES, DES, and 3DES CBC/ECB operations
-- PKCS#7, zero, and no-padding modes
-- Offline helper chat for decoding guidance and Kali references
-- Auto-decode mode to test likely common encodings
-- Read-only/reference commands for files, text, encoding, crypto, archives, and analysis
-- Localhost-only operation with a 2 MiB request limit
+- **Workbench:** Base64, hex, URL, Morse, Brainfuck, XOR, ROT13, Atbash, Caesar, hashes, AES/DES/3DES, and auto-decode candidates.
+- **Crypto:** local JWT structure inspection and hash comparison.
+- **Kali reference:** parameterized reference generators for nmap, curl, strings, OpenSSL, and grep. Commands are displayed only and are never executed.
+- **Utilities:** timestamp conversion, URL parsing, IPv4/CIDR calculations, and regex testing.
+- **Assistant:** offline rule-based explanations with no API key or external service.
 
-## Run on Kali Linux
+## Run
 
 ```bash
-git clone https://github.com/moashraf2006/ctf-crypto-toolkit.git
-cd ctf-crypto-toolkit
-python3 -m venv .venv
+cd ~/ctf-crypto-toolkit
 source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
 
-Open <http://127.0.0.1:5000>. The chat is rule-based and works without an API key or Internet connection.
+Open <http://127.0.0.1:5000>.
 
-## Safety boundary
+## Design and safety
 
-The toolkit intentionally does not execute shell commands, accept uploads, make outbound requests, provide C2 behavior, or run arbitrary code. Use the displayed commands manually and only in authorized CTF/lab environments.
+Sensitive transformations run locally in the browser when practical; the existing Flask API is localhost-only. This project does not upload files, make outbound requests, execute shell commands, provide persistence/C2 behavior, or scan targets. Use generated commands only within an authorized CTF, lab, or test scope.
+
+The command generator is intentionally a reference tool rather than an attack automation framework. More modules can be added incrementally, with client-side processing preferred for encodings, hashes, JWT structure, regex, and network calculations.

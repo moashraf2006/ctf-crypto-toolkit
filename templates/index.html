@@ -3,84 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CTF Crypto Toolkit</title>
+  <title>CyberTools CTF Workbench</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>
-    <h1>CTF Crypto Toolkit</h1>
-    <p>Local-only helper for crypto, encoding, decoding, and Kali command reference.</p>
+  <header class="hero">
+    <div><span class="eyebrow">LOCAL • OFFLINE • AUTHORIZED LABS</span><h1>CyberTools Workbench</h1><p>Crypto, CTF analysis, file helpers, network calculators, and safe Kali command references in one local workspace.</p></div>
+    <div class="badges"><span>🔒 localhost</span><span>⚡ offline</span><span>🧪 CTF mode</span></div>
   </header>
-
+  <nav class="tabs" aria-label="Workbench sections">
+    <button class="tab active" data-section="workbench">Workbench</button><button class="tab" data-section="crypto">Crypto</button><button class="tab" data-section="kali">Kali reference</button><button class="tab" data-section="utilities">Utilities</button><button class="tab" data-section="assistant">Assistant</button>
+  </nav>
   <main>
-    <section class="panel">
-      <h2>Transform</h2>
-
-      <label for="tool">Tool</label>
-      <select id="tool">
-        <option value="base64-encode">Base64 encode</option>
-        <option value="base64-decode">Base64 decode</option>
-        <option value="hex-encode">Hex encode</option>
-        <option value="hex-decode">Hex decode</option>
-        <option value="url-encode">URL encode</option>
-        <option value="url-decode">URL decode</option>
-        <option value="morse-encode">Morse encode</option>
-        <option value="morse-decode">Morse decode</option>
-        <option value="brainfuck">Brainfuck decode</option>
-        <option value="xor">Repeating-key XOR</option>
-        <option value="rot13">ROT13</option>
-        <option value="atbash">Atbash</option>
-        <option value="caesar">Caesar</option>
-        <option value="hash">Hash</option>
-        <option value="cipher">AES / DES / 3DES</option>
-      </select>
-
-      <div id="options"></div>
-
-      <label for="input">Input</label>
-      <textarea id="input" placeholder="Paste challenge data here"></textarea>
-
-      <button id="run">Transform</button>
-
-      <label for="output">Output</label>
-      <textarea id="output" readonly></textarea>
-      <p id="status"></p>
-    </section>
-
-    <section class="panel">
-      <h2>Auto Decode</h2>
-      <textarea id="autodecode-input" placeholder="Paste ciphertext or encoded text here"></textarea>
-      <button id="autodecode-btn">Try auto decode</button>
-      <div id="autodecode-results" class="results-box"></div>
-    </section>
-
-    <section class="panel">
-      <h2>Helper chat</h2>
-      <div id="chat" class="chat-box">
-        <div class="msg bot">Ask me about Base64, XOR, AES, Brainfuck, or Kali commands.</div>
-      </div>
-      <div class="chat-row">
-        <input id="message" placeholder="e.g. show Kali commands for Base64">
-        <button id="ask">Ask</button>
+    <section id="workbench" class="section active-section">
+      <div class="section-heading"><div><span class="eyebrow">01 / ANALYZE</span><h2>CTF Workbench</h2></div><p>Try non-destructive transformations locally. Results are candidates, not proof.</p></div>
+      <div class="grid two">
+        <section class="panel"><h3>Transform</h3><label for="tool">Operation</label><select id="tool"><option value="base64-encode">Base64 encode</option><option value="base64-decode">Base64 decode</option><option value="hex-encode">Hex encode</option><option value="hex-decode">Hex decode</option><option value="url-encode">URL encode</option><option value="url-decode">URL decode</option><option value="morse-encode">Morse encode</option><option value="morse-decode">Morse decode</option><option value="brainfuck">Brainfuck decode</option><option value="xor">Repeating-key XOR</option><option value="rot13">ROT13</option><option value="atbash">Atbash</option><option value="caesar">Caesar</option><option value="hash">Hash</option><option value="cipher">AES / DES / 3DES</option></select><div id="options"></div><label for="input">Input</label><textarea id="input" placeholder="Paste challenge data here"></textarea><button id="run" class="primary">Transform</button><label for="output">Output</label><textarea id="output" readonly></textarea><p id="status" class="status"></p></section>
+        <section class="panel"><h3>Auto Decode</h3><p class="muted">Tests Base64, URL, hex, common XOR keys, Caesar, ROT13, Atbash, Morse, and Brainfuck.</p><textarea id="autodecode-input" placeholder="Paste ciphertext or encoded text here"></textarea><button id="autodecode-btn" class="primary">Analyze candidates</button><div id="autodecode-results" class="results-box"></div></section>
       </div>
     </section>
 
-    <section class="panel help-panel">
-      <h2>Kali command reference</h2>
-      <pre>printf '%s' 'text' | base64
-printf '%s' 'BASE64' | base64 -d
-printf '%s' 'text' | xxd -p
-printf '%s' 'HEX' | xxd -r -p
-printf '%s' 'text' | sha256sum
-strings -n 6 file
-file file
-xxd -g 1 -l 64 file
-openssl enc -aes-256-cbc -K KEY_HEX -iv IV_HEX -in input -out output
-openssl rand -hex 16
-curl -s http://127.0.0.1:5000/api/health</pre>
+    <section id="crypto" class="section">
+      <div class="section-heading"><div><span class="eyebrow">02 / CRYPTO</span><h2>Crypto utilities</h2></div><p>Use explicit parameters; encrypted data cannot be reliably identified by appearance alone.</p></div>
+      <div class="grid two"><section class="panel"><h3>JWT inspector</h3><textarea id="jwt-input" placeholder="Paste a JWT (three dot-separated parts)"></textarea><button id="jwt-btn">Decode JWT locally</button><pre id="jwt-output" class="output-box"></pre></section><section class="panel"><h3>Hash comparison</h3><input id="hash-a" placeholder="First hash"><input id="hash-b" placeholder="Second hash"><button id="hash-compare">Compare</button><p id="hash-result" class="status"></p><p class="muted">Comparison is case-insensitive and does not crack hashes.</p></section></div>
     </section>
+
+    <section id="kali" class="section">
+      <div class="section-heading"><div><span class="eyebrow">03 / COMMANDS</span><h2>Kali command reference</h2></div><p>Reference and command construction only. Review scope and authorization before running anything.</p></div>
+      <section class="panel"><div class="command-toolbar"><select id="command-tool"></select><button id="copy-command">Copy</button></div><div id="command-description" class="callout"></div><div class="command-form" id="command-form"></div><pre id="generated-command" class="command-output"></pre><p class="muted">Commands are displayed, never executed by this application.</p></section>
+    </section>
+
+    <section id="utilities" class="section">
+      <div class="section-heading"><div><span class="eyebrow">04 / UTILITIES</span><h2>Everyday analysis helpers</h2></div><p>Client-side utilities keep pasted challenge data in your browser.</p></div>
+      <div class="grid two"><section class="panel"><h3>Timestamp converter</h3><input id="timestamp-input" placeholder="Unix seconds or ISO timestamp"><button id="timestamp-btn">Convert</button><pre id="timestamp-output" class="output-box"></pre></section><section class="panel"><h3>IPv4 / CIDR calculator</h3><input id="cidr-input" placeholder="192.168.1.10/24"><button id="cidr-btn">Calculate</button><pre id="cidr-output" class="output-box"></pre></section><section class="panel"><h3>URL parser</h3><input id="url-input" placeholder="https://example.test/path?a=1"><button id="url-btn">Parse URL</button><pre id="url-output" class="output-box"></pre></section><section class="panel"><h3>Regex tester</h3><input id="regex-input" placeholder="Regular expression"><textarea id="regex-text" placeholder="Text to test"></textarea><button id="regex-btn">Test regex</button><pre id="regex-output" class="output-box"></pre></section></div>
+    </section>
+
+    <section id="assistant" class="section"><div class="section-heading"><div><span class="eyebrow">05 / EXPLAIN</span><h2>Local helper chat</h2></div><p>Rule-based and offline; it does not call an AI service or run shell commands.</p></div><section class="panel"><div id="chat" class="chat-box"><div class="msg bot">Ask about decoding, crypto parameters, or safe Kali references.</div></div><div class="chat-row"><input id="message" placeholder="e.g. explain Base64 or show Kali commands"><button id="ask" class="primary">Ask</button></div></section></section>
   </main>
-
+  <footer>CyberTools is for CTFs, labs, and systems you are authorized to test. No network requests, uploads, command execution, or C2 behavior.</footer>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
