@@ -4,24 +4,27 @@ A local-only Flask web application for CTF encoding, decoding, cryptography, and
 
 ## Features
 
-- Base64, hex, URL, Morse, and Brainfuck transformations
+- Base64, hex, URL, Morse, Brainfuck, ROT13, Atbash, and Caesar transformations
 - Repeating-key XOR and hash calculation
 - AES, DES, and 3DES CBC/ECB operations
 - PKCS#7, zero, and no-padding modes
 - Offline helper chat for decoding guidance and Kali references
+- Auto-decode mode to test likely common encodings
 - Read-only/reference commands for files, text, encoding, crypto, archives, and analysis
 - Localhost-only operation with a 2 MiB request limit
 
 ## Run on Kali Linux
 
 ```bash
-git pull
+git clone https://github.com/moashraf2006/ctf-crypto-toolkit.git
+cd ctf-crypto-toolkit
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
 
-Open <http://127.0.0.1:5000>. If the browser was already open, refresh the page after `git pull`. The chat is rule-based and works without an API key or Internet connection.
+Open <http://127.0.0.1:5000>. The chat is rule-based and works without an API key or Internet connection.
 
 ## Safety boundary
 
